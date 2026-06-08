@@ -174,6 +174,10 @@ class CatalystHandler(BaseHTTPRequestHandler):
             ),
             "evolved": bool(payload.get("evolved", False)),
             "source": payload.get("source", "Google search intelligence"),
+            "sourceUrl": payload.get(
+                "sourceUrl",
+                "https://www.google.com/search?q=Catalyst6+Demon+memory+source",
+            ),
             "mediaTypes": payload.get("mediaTypes", ["image", "video", "mp4", "mp3"]),
             "createdAt": created_at or now_iso(),
         }

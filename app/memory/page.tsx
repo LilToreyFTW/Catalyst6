@@ -46,6 +46,14 @@ export default async function MemoryPage() {
                     <strong>Genome #{record.genomeNumber.toLocaleString()}</strong>
                     <span className={styles.metaText}>{new Date(record.createdAt).toLocaleString()}</span>
                     <span className={styles.metaText}>{record.source}</span>
+                    <a
+                      className={styles.sourceLink}
+                      href={record.sourceUrl}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      Open Google Source
+                    </a>
                   </div>
                   <p className={styles.sequenceBox} style={{ marginTop: 12 }}>
                     {record.segments.join(" | ")}

@@ -420,6 +420,13 @@
   font-weight: 700;
 }
 
+.sourceLink {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 @keyframes pulse {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }

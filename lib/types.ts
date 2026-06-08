@@ -5,6 +5,7 @@ export type MemoryRecord = {
   learningDelta: string;
   evolved: boolean;
   source: string;
+  sourceUrl: string;
   mediaTypes: string[];
   createdAt: string;
 };

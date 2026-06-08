@@ -19,6 +19,13 @@ function createSequence(length: number) {
   return sequence;
 }
 
+function createGoogleSourceUrl(genomeNumber: number, evolved: boolean) {
+  const query = evolved
+    ? `Catalyst6 Demon quadruple helix genome ${genomeNumber} Google source`
+    : `Catalyst6 Demon double helix genome ${genomeNumber} Google source`;
+  return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+}
+
 function createRecord(genomeNumber: number, evolved: boolean): MemoryRecord {
   return {
     id: crypto.randomUUID(),
@@ -27,6 +34,7 @@ function createRecord(genomeNumber: number, evolved: boolean): MemoryRecord {
     learningDelta: "search memory, ranking adaptation, transformer reinforcement.",
     evolved,
     source: "Google search intelligence",
+    sourceUrl: createGoogleSourceUrl(genomeNumber, evolved),
     mediaTypes: ["image", "video", "mp4", "mp3"],
     createdAt: new Date().toISOString()
   };

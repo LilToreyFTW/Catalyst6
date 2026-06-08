@@ -34,6 +34,9 @@ export async function POST(request: Request) {
     learningDelta: payload.learningDelta ?? "search memory, ranking adaptation, transformer reinforcement.",
     evolved: Boolean(payload.evolved),
     source: payload.source ?? "Google search intelligence",
+    sourceUrl:
+      payload.sourceUrl ??
+      "https://www.google.com/search?q=Catalyst6+Demon+memory+source",
     mediaTypes: payload.mediaTypes ?? ["image", "video", "mp4", "mp3"],
     createdAt: payload.createdAt
   };
