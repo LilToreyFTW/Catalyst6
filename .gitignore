@@ -4,4 +4,10 @@ dist
 coverage
 Thumbs.db
 Desktop.ini
-
+.next
+.env
+.env.local
+.env.production
+VPS__Catalyst6/api_key.secret
+work/memory-store.json
+*.pyc

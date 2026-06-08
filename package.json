@@ -2,10 +2,22 @@
   "name": "catalyst6-demon",
   "version": "0.1.0",
   "private": true,
-  "description": "Deployable static prototype for the Catalyst6 Demon concept.",
+  "description": "Next.js memory-backed prototype for the Catalyst6 Demon concept.",
   "scripts": {
-    "dev": "npx serve .",
-    "start": "npx serve ."
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "16.2.7",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.30",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.6",
+    "typescript": "5.8.3"
   },
   "keywords": [
     "catalyst6-demon",
