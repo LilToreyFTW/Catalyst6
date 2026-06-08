@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
+from urllib.request import urlopen
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -13,6 +14,7 @@ PORT_FILE = BASE_DIR / "port_configurations.config"
 MEMORY_FILE = BASE_DIR / "memory_store.json"
 API_KEY_FILE = BASE_DIR / "api_key.secret"
 ALLOWED_ORIGIN = os.getenv("CATALYST6_ALLOWED_ORIGIN", "*")
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY", "").strip()
 
 
 def read_text_file(path: Path) -> str:
@@ -78,6 +80,36 @@ def save_memory(records: list[dict[str, Any]]) -> None:
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def fetch_real_google_result(query: str) -> dict[str, str] | None:
+    if not SERPAPI_API_KEY:
+        return None
+
+    params = urlencode(
+        {
+            "engine": "google",
+            "q": query,
+            "api_key": SERPAPI_API_KEY,
+            "num": "1",
+        }
+    )
+    url = f"https://serpapi.com/search.json?{params}"
+
+    with urlopen(url, timeout=20) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+
+    organic_results = payload.get("organic_results")
+    if not isinstance(organic_results, list) or not organic_results:
+        return None
+
+    result = organic_results[0]
+    return {
+        "source": "Google organic result",
+        "sourceTitle": str(result.get("title", "Google result")),
+        "sourceSnippet": str(result.get("snippet", "No snippet returned.")),
+        "sourceUrl": str(result.get("link", "https://www.google.com")),
+    }
 
 
 class CatalystHandler(BaseHTTPRequestHandler):
@@ -164,6 +196,12 @@ class CatalystHandler(BaseHTTPRequestHandler):
             self._write_json({"error": "Missing required fields: id, segments"}, 400)
             return
 
+        query = payload.get(
+            "learningDelta",
+            f"Catalyst6 Demon genome {payload.get('genomeNumber', 0)} {'quadruple helix' if payload.get('evolved', False) else 'double helix'}",
+        )
+        real_result = fetch_real_google_result(str(query))
+
         record = {
             "id": record_id,
             "genomeNumber": int(payload.get("genomeNumber", 0)),
@@ -173,10 +211,15 @@ class CatalystHandler(BaseHTTPRequestHandler):
                 "search memory, ranking adaptation, transformer reinforcement.",
             ),
             "evolved": bool(payload.get("evolved", False)),
-            "source": payload.get("source", "Google search intelligence"),
+            "source": (real_result or {}).get("source", payload.get("source", "Google search intelligence")),
+            "sourceTitle": (real_result or {}).get("sourceTitle", payload.get("sourceTitle", "Google search result")),
+            "sourceSnippet": (real_result or {}).get("sourceSnippet", payload.get("sourceSnippet", "No snippet saved.")),
             "sourceUrl": payload.get(
                 "sourceUrl",
-                "https://www.google.com/search?q=Catalyst6+Demon+memory+source",
+                (real_result or {}).get(
+                    "sourceUrl",
+                    "https://www.google.com/search?q=Catalyst6+Demon+memory+source",
+                ),
             ),
             "mediaTypes": payload.get("mediaTypes", ["image", "video", "mp4", "mp3"]),
             "createdAt": created_at or now_iso(),

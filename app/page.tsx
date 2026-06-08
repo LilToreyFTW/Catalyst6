@@ -34,6 +34,8 @@ function createRecord(genomeNumber: number, evolved: boolean): MemoryRecord {
     learningDelta: "search memory, ranking adaptation, transformer reinforcement.",
     evolved,
     source: "Google search intelligence",
+    sourceTitle: "Pending Google result",
+    sourceSnippet: "Catalyst6 Demon is fetching a real result from Google search intelligence.",
     sourceUrl: createGoogleSourceUrl(genomeNumber, evolved),
     mediaTypes: ["image", "video", "mp4", "mp3"],
     createdAt: new Date().toISOString()

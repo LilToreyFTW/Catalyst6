@@ -55,6 +55,8 @@ export default async function MemoryPage() {
                       Open Google Source
                     </a>
                   </div>
+                  <p className={styles.sourceTitle}>{record.sourceTitle}</p>
+                  <p className={styles.sourceSnippet}>{record.sourceSnippet}</p>
                   <p className={styles.sequenceBox} style={{ marginTop: 12 }}>
                     {record.segments.join(" | ")}
                     {"\n"}

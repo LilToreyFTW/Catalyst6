@@ -427,6 +427,18 @@
   text-underline-offset: 3px;
 }
 
+.sourceTitle {
+  margin: 10px 0 6px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sourceSnippet {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 @keyframes pulse {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
