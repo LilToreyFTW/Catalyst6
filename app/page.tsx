@@ -9,6 +9,19 @@ const baseSet = ["A", "T", "C", "G", "N", "X"];
 
 type TabKey = "overview" | "double" | "quad";
 
+const liveTopics = [
+  "public figures interviews",
+  "YouTube creator trends",
+  "Facebook community discussions",
+  "emerging technology news",
+  "government disclosures",
+  "music releases",
+  "sports headlines",
+  "startup founders",
+  "internet culture trends",
+  "breaking world events"
+];
+
 function createSequence(length: number) {
   let sequence = "";
 
@@ -20,10 +33,18 @@ function createSequence(length: number) {
 }
 
 function createGoogleSourceUrl(genomeNumber: number, evolved: boolean) {
+  const topic = liveTopics[genomeNumber % liveTopics.length];
   const query = evolved
-    ? `Catalyst6 Demon quadruple helix genome ${genomeNumber} Google source`
-    : `Catalyst6 Demon double helix genome ${genomeNumber} Google source`;
+    ? `${topic} advanced analysis`
+    : `${topic} latest updates`;
   return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+}
+
+function createLearningDelta(genomeNumber: number, evolved: boolean) {
+  const topic = liveTopics[genomeNumber % liveTopics.length];
+  return evolved
+    ? `${topic}, pattern extraction, cross-platform clustering, accelerated reasoning`
+    : `${topic}, discovery intake, ranking adaptation, source reinforcement`;
 }
 
 function createRecord(genomeNumber: number, evolved: boolean): MemoryRecord {
@@ -31,11 +52,11 @@ function createRecord(genomeNumber: number, evolved: boolean): MemoryRecord {
     id: crypto.randomUUID(),
     genomeNumber,
     segments: [createSequence(24), createSequence(24), createSequence(24), createSequence(24)],
-    learningDelta: "search memory, ranking adaptation, transformer reinforcement.",
+    learningDelta: createLearningDelta(genomeNumber, evolved),
     evolved,
     source: "Google search intelligence",
     sourceTitle: "Pending Google result",
-    sourceSnippet: "Catalyst6 Demon is fetching a real result from Google search intelligence.",
+    sourceSnippet: "Catalyst6 Demon is fetching a real world result from Google search intelligence.",
     sourceUrl: createGoogleSourceUrl(genomeNumber, evolved),
     mediaTypes: ["image", "video", "mp4", "mp3"],
     createdAt: new Date().toISOString()

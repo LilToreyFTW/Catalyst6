@@ -34,6 +34,23 @@ async function fetchRealGoogleResult(query: string) {
   };
 }
 
+function fallbackQuery(genomeNumber: number, evolved: boolean) {
+  const topics = [
+    "people in the news",
+    "YouTube creators",
+    "Facebook discussions",
+    "technology headlines",
+    "government announcements",
+    "music artists",
+    "sports updates",
+    "startup founders",
+    "internet culture",
+    "world events"
+  ];
+  const topic = topics[Math.abs(genomeNumber) % topics.length];
+  return evolved ? `${topic} deep analysis` : `${topic} latest updates`;
+}
+
 export async function GET() {
   try {
     const records = await listMemoryRecords();
@@ -61,7 +78,7 @@ export async function POST(request: Request) {
 
   const query =
     payload.learningDelta ??
-    `Catalyst6 Demon genome ${payload.genomeNumber ?? 0} ${payload.evolved ? "quadruple helix" : "double helix"}`;
+    fallbackQuery(payload.genomeNumber ?? 0, Boolean(payload.evolved));
   const realResult = await fetchRealGoogleResult(query);
 
   const record: MemoryRecord = {

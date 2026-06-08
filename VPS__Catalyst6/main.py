@@ -82,6 +82,23 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def fallback_query(genome_number: int, evolved: bool) -> str:
+    topics = [
+        "people in the news",
+        "YouTube creators",
+        "Facebook discussions",
+        "technology headlines",
+        "government announcements",
+        "music artists",
+        "sports updates",
+        "startup founders",
+        "internet culture",
+        "world events",
+    ]
+    topic = topics[abs(genome_number) % len(topics)]
+    return f"{topic} {'deep analysis' if evolved else 'latest updates'}"
+
+
 def fetch_real_google_result(query: str) -> dict[str, str] | None:
     if not SERPAPI_API_KEY:
         return None
@@ -198,7 +215,7 @@ class CatalystHandler(BaseHTTPRequestHandler):
 
         query = payload.get(
             "learningDelta",
-            f"Catalyst6 Demon genome {payload.get('genomeNumber', 0)} {'quadruple helix' if payload.get('evolved', False) else 'double helix'}",
+            fallback_query(int(payload.get("genomeNumber", 0)), bool(payload.get("evolved", False))),
         )
         real_result = fetch_real_google_result(str(query))
 
