@@ -1,0 +1,18 @@
+{
+  "name": "catalyst6-demon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deployable static prototype for the Catalyst6 Demon concept.",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "catalyst6-demon",
+    "ai",
+    "dna",
+    "vercel",
+    "prototype"
+  ],
+  "license": "UNLICENSED"
+}
