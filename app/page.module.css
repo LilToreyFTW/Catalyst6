@@ -204,7 +204,7 @@
   width: min(100%, 390px);
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 0 24px rgba(110, 231, 255, 0.24));
+  filter: drop-shadow(0 0 16px rgba(110, 231, 255, 0.18));
 }
 
 .overviewStack {
@@ -227,50 +227,59 @@
 .helixPath {
   fill: none;
   stroke-linecap: round;
-  stroke-width: 8;
-  animation: helixFloat 4.8s ease-in-out infinite;
+  stroke-width: 10;
+  animation: helixFloat 5.2s ease-in-out infinite;
 }
 
 .pathBlue {
-  stroke: url(#helixBlue);
+  stroke: url(#helixBlueCore);
 }
 
 .pathBlueSoft {
-  stroke: rgba(178, 244, 255, 0.95);
-  animation-delay: -1.1s;
+  stroke: url(#helixBlueCoreSoft);
+  animation-delay: -1.2s;
 }
 
 .pathGreen {
-  stroke: url(#helixGreen);
-  stroke-width: 6;
-  opacity: 0.9;
+  stroke: url(#helixGreenCore);
+  stroke-width: 8;
+  opacity: 0.92;
   animation-delay: -0.6s;
 }
 
 .pathGold {
-  stroke: url(#helixGold);
-  stroke-width: 6;
-  opacity: 0.9;
+  stroke: url(#helixGoldCore);
+  stroke-width: 8;
+  opacity: 0.92;
   animation-delay: -1.6s;
 }
 
 .rung {
-  animation: rungPulse 3.4s ease-in-out infinite;
+  animation: rungPulse 3.8s ease-in-out infinite;
+}
+
+.rungSecondary {
+  animation: rungPulse 4.1s ease-in-out infinite;
 }
 
 .rungLine {
-  stroke: rgba(157, 239, 255, 0.38);
-  stroke-width: 2.5;
+  stroke: rgba(203, 248, 255, 0.72);
+  stroke-width: 3.4;
+}
+
+.rungLineSecondary {
+  stroke: rgba(255, 233, 178, 0.56);
+  stroke-width: 2.6;
 }
 
 .rungNodeBlue {
-  fill: #9defff;
-  filter: drop-shadow(0 0 8px rgba(157, 239, 255, 0.55));
+  fill: #e6fdff;
+  filter: drop-shadow(0 0 7px rgba(157, 239, 255, 0.45));
 }
 
 .evolved .pathGreen,
 .evolved .pathGold {
-  filter: drop-shadow(0 0 10px rgba(255, 200, 87, 0.22));
+  filter: drop-shadow(0 0 8px rgba(255, 200, 87, 0.16));
 }
 
 .signalPanel,

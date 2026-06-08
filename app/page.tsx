@@ -41,7 +41,56 @@ function HelixVisualizer({
   title: string;
   subtitle: string;
 }) {
-  const rungCount = 16;
+  const rungCount = 24;
+  const width = 420;
+  const height = 420;
+  const center = width / 2;
+  const amplitude = 68;
+  const secondaryAmplitude = 102;
+  const topPadding = 24;
+  const step = (height - topPadding * 2) / (rungCount - 1);
+
+  function buildHelixData(offset: number, amp: number) {
+    const left: string[] = [];
+    const right: string[] = [];
+    const rungs: Array<{
+      y: number;
+      leftX: number;
+      rightX: number;
+      depth: number;
+      angle: number;
+    }> = [];
+
+    for (let index = 0; index < rungCount; index += 1) {
+      const y = topPadding + index * step;
+      const t = index / (rungCount - 1);
+      const phase = t * Math.PI * 4 + offset;
+      const spread = Math.sin(phase) * amp;
+      const depth = (Math.cos(phase) + 1) / 2;
+      const taper = 0.84 + Math.sin(t * Math.PI) * 0.16;
+      const leftX = center - spread * taper;
+      const rightX = center + spread * taper;
+
+      left.push(`${index === 0 ? "M" : "L"} ${leftX.toFixed(2)} ${y.toFixed(2)}`);
+      right.push(`${index === 0 ? "M" : "L"} ${rightX.toFixed(2)} ${y.toFixed(2)}`);
+      rungs.push({
+        y,
+        leftX,
+        rightX,
+        depth,
+        angle: Math.sin(phase) * 18
+      });
+    }
+
+    return {
+      leftPath: left.join(" "),
+      rightPath: right.join(" "),
+      rungs
+    };
+  }
+
+  const primary = buildHelixData(0, amplitude);
+  const secondary = buildHelixData(Math.PI / 2, secondaryAmplitude);
 
   return (
     <div className={`${styles.card} ${styles.helixPanel}`}>
@@ -55,55 +104,83 @@ function HelixVisualizer({
 
       <div className={`${styles.helixWrap} ${evolved ? styles.evolved : ""}`}>
         <div className={styles.helixCore}>
-          <svg className={styles.helixSvg} viewBox="0 0 420 420" aria-hidden="true">
+          <svg className={styles.helixSvg} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
             <defs>
-              <linearGradient id="helixBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#6ee7ff" />
-                <stop offset="100%" stopColor="#b2f4ff" />
+              <linearGradient id="helixBlueCore" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#66dfff" />
+                <stop offset="48%" stopColor="#dffcff" />
+                <stop offset="100%" stopColor="#43b8f5" />
               </linearGradient>
-              <linearGradient id="helixGreen" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#6dffb8" />
-                <stop offset="100%" stopColor="#d8fff0" />
+              <linearGradient id="helixBlueCoreSoft" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#38a7dd" />
+                <stop offset="50%" stopColor="#dffcff" />
+                <stop offset="100%" stopColor="#7ee9ff" />
               </linearGradient>
-              <linearGradient id="helixGold" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#ffc857" />
-                <stop offset="100%" stopColor="#fff0b8" />
+              <linearGradient id="helixGreenCore" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#41d58f" />
+                <stop offset="52%" stopColor="#effff7" />
+                <stop offset="100%" stopColor="#1fae71" />
+              </linearGradient>
+              <linearGradient id="helixGoldCore" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#d8a63a" />
+                <stop offset="52%" stopColor="#fff4cc" />
+                <stop offset="100%" stopColor="#ffdc74" />
               </linearGradient>
             </defs>
 
-            {Array.from({ length: rungCount }).map((_, index) => (
-              <g className={styles.rung} key={index} style={{ animationDelay: `${index * -0.18}s` }}>
-                <line
-                  x1="140"
-                  y1={38 + index * 22}
-                  x2="280"
-                  y2={38 + index * 22}
-                  className={styles.rungLine}
-                />
-                <circle cx="140" cy={38 + index * 22} r="4" className={styles.rungNodeBlue} />
-                <circle cx="280" cy={38 + index * 22} r="4" className={styles.rungNodeBlue} />
-              </g>
-            ))}
-
             <path
-              d="M140 18 C 310 72, 310 138, 140 202 S -30 332, 140 402"
+              d={primary.leftPath}
               className={`${styles.helixPath} ${styles.pathBlue}`}
             />
             <path
-              d="M280 18 C 110 72, 110 138, 280 202 S 450 332, 280 402"
+              d={primary.rightPath}
               className={`${styles.helixPath} ${styles.pathBlueSoft}`}
             />
+            {primary.rungs.map((rung, index) => (
+              <g className={styles.rung} key={`primary-${index}`} style={{ animationDelay: `${index * -0.12}s` }}>
+                <line
+                  x1={rung.leftX}
+                  y1={rung.y}
+                  x2={rung.rightX}
+                  y2={rung.y}
+                  className={styles.rungLine}
+                  style={{
+                    opacity: 0.2 + rung.depth * 0.8,
+                    transform: `rotate(${rung.angle}deg)`,
+                    transformOrigin: `${center}px ${rung.y}px`
+                  }}
+                />
+                <circle cx={rung.leftX} cy={rung.y} r={2.5 + rung.depth * 2.8} className={styles.rungNodeBlue} />
+                <circle cx={rung.rightX} cy={rung.y} r={2.5 + rung.depth * 2.8} className={styles.rungNodeBlue} />
+              </g>
+            ))}
 
             {evolved && (
               <>
                 <path
-                  d="M105 18 C 255 72, 255 138, 105 202 S -45 332, 105 402"
+                  d={secondary.leftPath}
                   className={`${styles.helixPath} ${styles.pathGreen}`}
                 />
                 <path
-                  d="M315 18 C 165 72, 165 138, 315 202 S 465 332, 315 402"
+                  d={secondary.rightPath}
                   className={`${styles.helixPath} ${styles.pathGold}`}
                 />
+                {secondary.rungs.map((rung, index) => (
+                  <g className={styles.rungSecondary} key={`secondary-${index}`} style={{ animationDelay: `${index * -0.14}s` }}>
+                    <line
+                      x1={rung.leftX}
+                      y1={rung.y}
+                      x2={rung.rightX}
+                      y2={rung.y}
+                      className={styles.rungLineSecondary}
+                      style={{
+                        opacity: 0.18 + rung.depth * 0.75,
+                        transform: `rotate(${rung.angle * -1}deg)`,
+                        transformOrigin: `${center}px ${rung.y}px`
+                      }}
+                    />
+                  </g>
+                ))}
               </>
             )}
           </svg>
