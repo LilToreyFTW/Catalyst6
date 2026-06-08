@@ -41,6 +41,8 @@ function HelixVisualizer({
   title: string;
   subtitle: string;
 }) {
+  const rungCount = 16;
+
   return (
     <div className={`${styles.card} ${styles.helixPanel}`}>
       <div className={styles.panelHeader}>
@@ -52,14 +54,59 @@ function HelixVisualizer({
       </div>
 
       <div className={`${styles.helixWrap} ${evolved ? styles.evolved : ""}`}>
-        <div className={`${styles.strand} ${styles.s1}`} />
-        <div className={`${styles.strand} ${styles.s2}`} />
-        <div className={`${styles.strand} ${styles.s3}`} />
-        <div className={`${styles.strand} ${styles.s4}`} />
-        <div className={styles.basePairs}>
-          {Array.from({ length: 9 }).map((_, index) => (
-            <div className={styles.pair} key={index} />
-          ))}
+        <div className={styles.helixCore}>
+          <svg className={styles.helixSvg} viewBox="0 0 420 420" aria-hidden="true">
+            <defs>
+              <linearGradient id="helixBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#6ee7ff" />
+                <stop offset="100%" stopColor="#b2f4ff" />
+              </linearGradient>
+              <linearGradient id="helixGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#6dffb8" />
+                <stop offset="100%" stopColor="#d8fff0" />
+              </linearGradient>
+              <linearGradient id="helixGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ffc857" />
+                <stop offset="100%" stopColor="#fff0b8" />
+              </linearGradient>
+            </defs>
+
+            {Array.from({ length: rungCount }).map((_, index) => (
+              <g className={styles.rung} key={index} style={{ animationDelay: `${index * -0.18}s` }}>
+                <line
+                  x1="140"
+                  y1={38 + index * 22}
+                  x2="280"
+                  y2={38 + index * 22}
+                  className={styles.rungLine}
+                />
+                <circle cx="140" cy={38 + index * 22} r="4" className={styles.rungNodeBlue} />
+                <circle cx="280" cy={38 + index * 22} r="4" className={styles.rungNodeBlue} />
+              </g>
+            ))}
+
+            <path
+              d="M140 18 C 310 72, 310 138, 140 202 S -30 332, 140 402"
+              className={`${styles.helixPath} ${styles.pathBlue}`}
+            />
+            <path
+              d="M280 18 C 110 72, 110 138, 280 202 S 450 332, 280 402"
+              className={`${styles.helixPath} ${styles.pathBlueSoft}`}
+            />
+
+            {evolved && (
+              <>
+                <path
+                  d="M105 18 C 255 72, 255 138, 105 202 S -45 332, 105 402"
+                  className={`${styles.helixPath} ${styles.pathGreen}`}
+                />
+                <path
+                  d="M315 18 C 165 72, 165 138, 315 202 S 465 332, 315 402"
+                  className={`${styles.helixPath} ${styles.pathGold}`}
+                />
+              </>
+            )}
+          </svg>
         </div>
       </div>
     </div>
