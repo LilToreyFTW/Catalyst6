@@ -63,6 +63,33 @@
   margin-top: 26px;
 }
 
+.tabBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.tabButton {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 180ms ease, transform 180ms ease, border-color 180ms ease;
+}
+
+.tabButton:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.tabActive {
+  background: linear-gradient(120deg, rgba(110, 231, 255, 0.2), rgba(109, 255, 184, 0.16));
+  border-color: rgba(110, 231, 255, 0.38);
+}
+
 .button {
   border: 0;
   border-radius: 16px;
@@ -134,7 +161,8 @@
 .signalPanel,
 .specGrid,
 .dnaStream,
-.viewerPreview {
+.viewerPreview,
+.helixPanel {
   position: relative;
   z-index: 1;
 }
@@ -163,6 +191,23 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
     radial-gradient(circle at center, rgba(110, 231, 255, 0.12), transparent 58%);
   overflow: hidden;
+}
+
+.overviewStack {
+  display: grid;
+  gap: 16px;
+}
+
+.helixPanel {
+  padding: 14px;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .strand {
@@ -438,6 +483,10 @@
   .specGrid,
   .metrics {
     grid-template-columns: 1fr;
+  }
+
+  .panelHeader {
+    flex-direction: column;
   }
 
   .title {

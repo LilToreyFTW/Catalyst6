@@ -15,6 +15,10 @@ API_KEY_FILE = BASE_DIR / "api_key.secret"
 ALLOWED_ORIGIN = os.getenv("CATALYST6_ALLOWED_ORIGIN", "*")
 
 
+def read_text_file(path: Path) -> str:
+    return path.read_text(encoding="utf-8").strip()
+
+
 def load_api_key() -> str:
     env_value = os.getenv("CATALYST6_API_KEY", "").strip()
     if env_value:
@@ -27,10 +31,6 @@ def load_api_key() -> str:
 
 
 API_KEY = load_api_key()
-
-
-def read_text_file(path: Path) -> str:
-    return path.read_text(encoding="utf-8").strip()
 
 
 def resolve_bind_host_and_port() -> tuple[str, int]:

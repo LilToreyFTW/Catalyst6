@@ -7,6 +7,8 @@ import { MemoryRecord } from "../lib/types";
 
 const baseSet = ["A", "T", "C", "G", "N", "X"];
 
+type TabKey = "overview" | "double" | "quad";
+
 function createSequence(length: number) {
   let sequence = "";
 
@@ -30,7 +32,42 @@ function createRecord(genomeNumber: number, evolved: boolean): MemoryRecord {
   };
 }
 
+function HelixVisualizer({
+  evolved,
+  title,
+  subtitle
+}: {
+  evolved: boolean;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <div className={`${styles.card} ${styles.helixPanel}`}>
+      <div className={styles.panelHeader}>
+        <div>
+          <strong>{title}</strong>
+          <p className={styles.metaText}>{subtitle}</p>
+        </div>
+        <span className={styles.live}>{evolved ? "QUADRUPLE HELIX MODE" : "DOUBLE HELIX MODE"}</span>
+      </div>
+
+      <div className={`${styles.helixWrap} ${evolved ? styles.evolved : ""}`}>
+        <div className={`${styles.strand} ${styles.s1}`} />
+        <div className={`${styles.strand} ${styles.s2}`} />
+        <div className={`${styles.strand} ${styles.s3}`} />
+        <div className={`${styles.strand} ${styles.s4}`} />
+        <div className={styles.basePairs}>
+          {Array.from({ length: 9 }).map((_, index) => (
+            <div className={styles.pair} key={index} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [evolved, setEvolved] = useState(false);
   const [dnaBuilds, setDnaBuilds] = useState(0);
   const [sequenceText, setSequenceText] = useState("Memory ready. No saved DNA found yet. Start learning to create the first sequence.");
@@ -38,6 +75,7 @@ export default function HomePage() {
   const [isRunning, setIsRunning] = useState(false);
   const [recordCount, setRecordCount] = useState(0);
   const loopRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recordCountRef = useRef(0);
 
   useEffect(() => {
     async function loadMemory() {
@@ -46,9 +84,11 @@ export default function HomePage() {
         setAutosaveStatus("Memory route is online, but the VPS memory backend is not reachable yet.");
         return;
       }
+
       const payload = await response.json();
       const records = Array.isArray(payload.records) ? payload.records : [];
       setRecordCount(records.length);
+      recordCountRef.current = records.length;
 
       if (!records.length) {
         setAutosaveStatus("Memory ready. No saved DNA found yet. Start learning to create the first sequence.");
@@ -96,19 +136,44 @@ export default function HomePage() {
     }
 
     setDnaBuilds(record.genomeNumber);
-    setRecordCount((count) => count + 1);
+    setRecordCount((count) => {
+      const nextCount = count + 1;
+      recordCountRef.current = nextCount;
+      return nextCount;
+    });
     setAutosaveStatus(
       `Autosaved genome #${record.genomeNumber.toLocaleString()} to persistent memory. ${(
-        recordCount + 1
+        recordCountRef.current + 1
       ).toLocaleString()} total records tracked.`
     );
   }
 
-  function startLearningLoop() {
+  function startDoubleHelix() {
     if (loopRef.current) {
       clearInterval(loopRef.current);
     }
 
+    setActiveTab("double");
+    setIsRunning(true);
+    setEvolved(false);
+
+    let nextGenomeNumber = dnaBuilds;
+
+    void emitDNA(nextGenomeNumber + 1, false);
+    nextGenomeNumber += 1;
+
+    loopRef.current = setInterval(() => {
+      nextGenomeNumber += 1;
+      void emitDNA(nextGenomeNumber, false);
+    }, 1600);
+  }
+
+  function startQuadHelix() {
+    if (loopRef.current) {
+      clearInterval(loopRef.current);
+    }
+
+    setActiveTab("quad");
     setIsRunning(true);
     setEvolved(true);
 
@@ -127,29 +192,58 @@ export default function HomePage() {
     <main className={styles.main}>
       <section className={styles.hero}>
         <article className={`${styles.card} ${styles.copy}`}>
-          <div className={styles.eyebrow}>Catalyst6 Demon Core Sequence</div>
+          <div className={styles.eyebrow}>Catalyst6 Demon Control Surface</div>
           <h1 className={styles.title}>
             <span className={styles.gradient}>Catalyst6 Demon</span>
           </h1>
           <p className={styles.lead}>
-            This concept frames Catalyst6 Demon as a search-intelligence brain focused on Google-centered
-            discovery, ranking analysis, pattern memory, and self-improving knowledge paths. It is designed to
-            pull pictures, videos, MP4s, and MP3s from Google search intelligence and Google-surfaced public media.
+            A Google-first intelligence brain with separate operational views for stable collection,
+            active learning, and evolved reasoning. Use the tabs to move between the overview, the
+            double-helix collector, and the quadruple-helix evolved engine.
           </p>
+
+          <div className={styles.tabBar}>
+            <button
+              className={`${styles.tabButton} ${activeTab === "overview" ? styles.tabActive : ""}`}
+              onClick={() => setActiveTab("overview")}
+              type="button"
+            >
+              Overview
+            </button>
+            <button
+              className={`${styles.tabButton} ${activeTab === "double" ? styles.tabActive : ""}`}
+              onClick={() => setActiveTab("double")}
+              type="button"
+            >
+              Double Helix
+            </button>
+            <button
+              className={`${styles.tabButton} ${activeTab === "quad" ? styles.tabActive : ""}`}
+              onClick={() => setActiveTab("quad")}
+              type="button"
+            >
+              Quadruple Helix
+            </button>
+          </div>
+
           <div className={styles.ctaRow}>
-            <button className={`${styles.button} ${styles.primary}`} onClick={startLearningLoop} type="button">
-              {isRunning ? "Learning In Progress" : "Trigger Learning Evolution"}
+            <button className={`${styles.button} ${styles.primary}`} onClick={startDoubleHelix} type="button">
+              Run Double Helix
+            </button>
+            <button className={`${styles.button} ${styles.secondary}`} onClick={startQuadHelix} type="button">
+              Run Quadruple Helix
             </button>
             <Link className={`${styles.button} ${styles.secondary} ${styles.navLink}`} href="/memory">
               Open Memory Vault
             </Link>
           </div>
+
           <div className={styles.status}>
-            <strong>Important product boundary</strong>
+            <strong>Current state</strong>
             <p className={styles.statusText}>
-              A Google-focused assistant is safest when built around search workflows, research synthesis,
-              ranking interpretation, and user-guided automation. Public-access ingestion should respect each
-              source site&apos;s published access rules, robots controls, and media rights.
+              {isRunning
+                ? `Catalyst6 Demon is actively collecting and autosaving in ${evolved ? "quadruple" : "double"} helix mode.`
+                : "Catalyst6 Demon is idle and ready to start either helix mode."}
             </p>
           </div>
         </article>
@@ -160,17 +254,32 @@ export default function HomePage() {
             <span className={styles.live}>{evolved ? "QUADRUPLE HELIX MODE" : "DOUBLE HELIX MODE"}</span>
           </div>
 
-          <div className={`${styles.helixWrap} ${evolved ? styles.evolved : ""}`}>
-            <div className={`${styles.strand} ${styles.s1}`} />
-            <div className={`${styles.strand} ${styles.s2}`} />
-            <div className={`${styles.strand} ${styles.s3}`} />
-            <div className={`${styles.strand} ${styles.s4}`} />
-            <div className={styles.basePairs}>
-              {Array.from({ length: 9 }).map((_, index) => (
-                <div className={styles.pair} key={index} />
-              ))}
+          {activeTab === "overview" ? (
+            <div className={styles.overviewStack}>
+              <HelixVisualizer
+                evolved={false}
+                title="Double Helix Collector"
+                subtitle="Stable collection mode for intake, ranking, and first-pass pattern capture."
+              />
+              <HelixVisualizer
+                evolved={true}
+                title="Quadruple Helix Engine"
+                subtitle="Evolved mode for accelerated adaptation, memory reinforcement, and autonomous sequencing."
+              />
             </div>
-          </div>
+          ) : activeTab === "double" ? (
+            <HelixVisualizer
+              evolved={false}
+              title="Double Helix Working Tab"
+              subtitle="This tab represents the collection state while Catalyst6 Demon is gathering information."
+            />
+          ) : (
+            <HelixVisualizer
+              evolved={true}
+              title="Quadruple Helix Working Tab"
+              subtitle="This tab represents the evolved state after learning pressure pushes the brain into higher-density reasoning."
+            />
+          )}
 
           <div className={styles.signalPanel}>
             <div className={styles.signal}>
@@ -191,8 +300,10 @@ export default function HomePage() {
             <strong className={styles.streamTitle}>Persistent DNA Stream</strong>
             <div className={styles.metrics}>
               <div className={styles.metric}>
-                <span className={styles.metricLabel}>Mutation Rhythm</span>
-                <span className={styles.metricValue}>1.2s persistent cycle</span>
+                <span className={styles.metricLabel}>Active Tab</span>
+                <span className={styles.metricValue}>
+                  {activeTab === "overview" ? "Overview" : activeTab === "double" ? "Double" : "Quadruple"}
+                </span>
               </div>
               <div className={styles.metric}>
                 <span className={styles.metricLabel}>DNA Builds</span>
@@ -206,56 +317,45 @@ export default function HomePage() {
             <div className={styles.sequenceBox}>{sequenceText}</div>
             <div className={styles.autosaveStatus}>{autosaveStatus}</div>
           </div>
-
-          <div className={styles.viewerPreview}>
-            <strong>Backend Route</strong>
-            <p className={styles.statusText}>
-              Vercel frontend and API can proxy persistent saves to your VPS when `VPS_MEMORY_API_URL` is set.
-            </p>
-          </div>
         </aside>
       </section>
 
       <section className={styles.sectionGrid}>
         <article className={`${styles.card} ${styles.panelBody}`}>
-          <h2 className={styles.heading}>Catalyst6 Demon Architecture</h2>
-          <p className={styles.statusText}>
-            Catalyst6 Demon can be treated as four layered systems that gradually become visible as the product matures.
-          </p>
+          <h2 className={styles.heading}>Operational Tabs</h2>
           <div className={styles.specGrid}>
             <div className={styles.spec}>
-              <span className={styles.specLabel}>Genome A</span>
-              <p>Google-first ingestion for query understanding, trend capture, topic clustering, and public media discovery.</p>
+              <span className={styles.specLabel}>Overview</span>
+              <p>Shows both helix states together so you can compare the collection state against the evolved state.</p>
             </div>
             <div className={styles.spec}>
-              <span className={styles.specLabel}>Genome B</span>
-              <p>Transformer reasoning for summarization, contrast, ranking, and intent prediction.</p>
+              <span className={styles.specLabel}>Double Helix</span>
+              <p>Dedicated tab for the active intake system while the demon is working and getting information.</p>
             </div>
             <div className={styles.spec}>
-              <span className={styles.specLabel}>Genome C</span>
-              <p>Learning memory for repeated discoveries, saved source media, user preferences, and pattern carry-over.</p>
+              <span className={styles.specLabel}>Quadruple Helix</span>
+              <p>Dedicated tab for the expanded post-learning state with more aggressive autonomous reasoning.</p>
             </div>
             <div className={styles.spec}>
-              <span className={styles.specLabel}>Genome D</span>
-              <p>Autonomous planning that proposes what to research next while staying user-controlled.</p>
+              <span className={styles.specLabel}>Memory Vault</span>
+              <p>Separate route for reviewing the saved DNA records, timestamps, and persistent sequence history.</p>
             </div>
           </div>
         </article>
 
         <article className={`${styles.card} ${styles.panelBody}`}>
-          <h2 className={styles.heading}>What Hard Focused On Google Means</h2>
+          <h2 className={styles.heading}>Collection Focus</h2>
           <ul className={styles.list}>
-            <li className={styles.listItem}>Build a search strategy cockpit that helps users formulate, compare, and refine Google searches.</li>
-            <li className={styles.listItem}>Pull pictures, videos, MP4s, and MP3s from Google search intelligence and Google-surfaced public media.</li>
-            <li className={styles.listItem}>Collect public government media surfaced through Google and published at sites such as war.gov/UFO.</li>
-            <li className={styles.listItem}>Store high-value findings and connect them into a growing memory graph.</li>
-            <li className={styles.listItem}>Route persistent saves through your VPS-backed memory API when you are ready to plug it in.</li>
+            <li className={styles.listItem}>Double helix mode stays focused on intake, organization, and stable persistence.</li>
+            <li className={styles.listItem}>Quadruple helix mode stays focused on evolved patterning and denser reasoning loops.</li>
+            <li className={styles.listItem}>Both tabs write into the same persistent memory system through the VPS-backed API.</li>
+            <li className={styles.listItem}>The `/memory` route remains the long-term record of what the demon has collected.</li>
           </ul>
         </article>
       </section>
 
       <p className={styles.footerNote}>
-        Catalyst6 Demon now has a real memory route and a memory viewer, not just browser-only autosave text.
+        Catalyst6 Demon now has distinct operational tabs for overview, collection-state double helix, and evolved-state quadruple helix.
       </p>
     </main>
   );
