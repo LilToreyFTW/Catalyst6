@@ -115,6 +115,12 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.facebookButton {
+  background: linear-gradient(120deg, #1877f2, #46a0ff);
+  color: white;
+  box-shadow: 0 14px 32px rgba(24, 119, 242, 0.28);
+}
+
 .status {
   margin-top: 20px;
   padding: 16px 18px;

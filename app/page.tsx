@@ -388,6 +388,9 @@ export default function HomePage() {
             <button className={`${styles.button} ${styles.secondary}`} onClick={startQuadHelix} type="button">
               Run Quadruple Helix
             </button>
+            <Link className={`${styles.button} ${styles.facebookButton}`} href="/api/auth/facebook/start">
+              Connect Facebook
+            </Link>
             <Link className={`${styles.button} ${styles.secondary} ${styles.navLink}`} href="/memory">
               Open Memory Vault
             </Link>
@@ -399,6 +402,10 @@ export default function HomePage() {
               {isRunning
                 ? `Catalyst6 Demon is actively collecting and autosaving in ${evolved ? "quadruple" : "double"} helix mode.`
                 : "Catalyst6 Demon is idle and ready to start either helix mode."}
+            </p>
+            <p className={styles.statusText}>
+              Facebook login is scaffolded through Meta OAuth and activates once `FACEBOOK_APP_ID`,
+              `FACEBOOK_APP_SECRET`, and `FACEBOOK_REDIRECT_URI` are configured.
             </p>
           </div>
         </article>

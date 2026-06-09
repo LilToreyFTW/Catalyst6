@@ -65,6 +65,21 @@ Expected VPS endpoints:
 The VPS Python server can read its API key either from the environment variable `CATALYST6_API_KEY`
 or from `VPS__Catalyst6/api_key.secret`.
 
+## Facebook login
+
+The app includes a Meta OAuth scaffold.
+
+Required environment variables:
+
+```bash
+NEXT_PUBLIC_APP_URL=https://catalyst6.vercel.app
+FACEBOOK_APP_ID=your-meta-app-id
+FACEBOOK_APP_SECRET=your-meta-app-secret
+FACEBOOK_REDIRECT_URI=https://catalyst6.vercel.app/api/auth/facebook/callback
+```
+
+In Meta for Developers, add this redirect URI to `Valid OAuth Redirect URIs`.
+
 ## Notes
 
 If `VPS_MEMORY_API_URL` is not set, local development falls back to `work/memory-store.json`. Vercel file writes are not durable, so production persistence should use your VPS API or a database.
